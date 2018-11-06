@@ -11,6 +11,9 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 
+leagueId = 2255318
+seasonId = 2018
+
 def simple_get(url):
     """
     Attempts to get the content at `url` by making an HTTP GET request.
@@ -49,7 +52,7 @@ teamIds =
 scores = {}
 for week in range(1, 17):
     r = requests.get('http://games.espn.com/ffl/api/v2/scoreboard', 
-                     params={'leagueId': 2255318, 'seasonId': 2018, 'matchupPeriodId': week})
+                     params={'leagueId': leagueId, 'seasonId': seasonId, 'matchupPeriodId': week})
     scores[week] = r.json()
 
 ##df = []
