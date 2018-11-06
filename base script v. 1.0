@@ -1,0 +1,93 @@
+import openpyxl, os, pandas as pd, requests, sys
+
+from openpyxl import Workbook, load_workbook
+from os import walk
+from requests import RequestException, get
+from contextlib import closing
+from bs4 import BeautifulSoup
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+import seaborn as sns
+
+def simple_get(url):
+    """
+    Attempts to get the content at `url` by making an HTTP GET request.
+    If the content-type of response is some kind of HTML/XML, return the
+    text content, otherwise return None.
+    """
+    try:
+        with closing(get(url, stream=True)) as resp:
+            if is_good_response(resp):
+                return resp.content
+            else:
+                return None
+
+    except RequestException as e:
+        log_error('Error during requests to {0} : {1}'.format(url, str(e)))
+        return None
+
+def is_good_response(resp):
+    """
+    Returns True if the response seems to be HTML, False otherwise.
+    """
+    content_type = resp.headers['Content-Type'].lower()
+    return (resp.status_code == 200 
+            and content_type is not None 
+            and content_type.find('html') > -1)
+
+
+def log_error(e):
+    print(e)
+
+def bSoup(U):
+    global raw_html, soup
+    raw_html = simple_get(U)
+    soup = BeautifulSoup(raw_html, 'html.parser')
+teamIds = 
+scores = {}
+for week in range(1, 17):
+    r = requests.get('http://games.espn.com/ffl/api/v2/scoreboard', 
+                     params={'leagueId': 2255318, 'seasonId': 2018, 'matchupPeriodId': week})
+    scores[week] = r.json()
+
+##df = []
+##for key in scores:
+##    temp = scores[key]['scoreboard']['matchups']
+##    for match in temp:
+##        df.append([key, 
+##                   match['teams'][0]['team']['teamAbbrev'],
+##                   match['teams'][1]['team']['teamAbbrev'],
+##                   match['teams'][0]['score'],
+##                   match['teams'][1]['score']])
+##
+##df = pd.DataFrame(df, columns=['Week', 'HomeAbbrev', 'AwayAbbrev', 'HomeScore', 'AwayScore'])
+##
+##df = (df[['Week', 'HomeAbbrev', 'HomeScore']]
+##      .rename(columns={'HomeAbbrev': 'Abbrev', 'HomeScore': 'Score'})
+##      .append(df[['Week', 'AwayAbbrev', 'AwayScore']]
+##             .rename(columns={'AwayAbbrev': 'Abbrev', 'AwayScore': 'Score'}))
+##     )
+##
+##df = df[df['Score'] > 0]
+##
+##df2 = df.groupby(['Abbrev'])['Score'].sum()
+##df2.sort_values(inplace=True)
+##df3 = df2.index
+##df4 = []
+##for i in range(len(df3)):
+##    df4.append(df3[i])
+##    
+##
+##df['Type'] = pd.Series(['Regular' if w<=14 else 'Playoff' for w in df['Week']])
+##fig, ax = plt.subplots(1,1, figsize=(16,6))
+##sns.boxplot(x='Abbrev',
+##            y='Score',
+##            hue='Type',
+##            data=df,
+##            palette='muted',
+##            order = df4)
+##ax.set_xlabel('')
+##ax.set_title('Distribution of score, ordered by total points scored')
+##plt.show()
