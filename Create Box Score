@@ -1,0 +1,84 @@
+import matplotlib.pyplot as plt, numpy as np, openpyxl, os, pandas as pd, pickle, requests, seaborn as sns, sys
+
+from pprint import pprint as pp
+from openpyxl import Workbook, load_workbook
+from os import walk
+from requests import RequestException, get
+from contextlib import closing
+from bs4 import BeautifulSoup
+
+leagueId = 2255318
+seasonId = 2018
+
+def simple_get(url):
+    """
+    Attempts to get the content at `url` by making an HTTP GET request.
+    If the content-type of response is some kind of HTML/XML, return the
+    text content, otherwise return None.
+    """
+    try:
+        with closing(get(url, stream=True)) as resp:
+            if is_good_response(resp):
+                return resp.content
+            else:
+                return None
+
+    except RequestException as e:
+        log_error('Error during requests to {0} : {1}'.format(url, str(e)))
+        return None
+
+def is_good_response(resp):
+    """
+    Returns True if the response seems to be HTML, False otherwise.
+    """
+    content_type = resp.headers['Content-Type'].lower()
+    return (resp.status_code == 200 
+            and content_type is not None 
+            and content_type.find('html') > -1)
+
+
+def log_error(e):
+    print(e)
+
+def bSoup(U):
+    global raw_html, soup
+    raw_html = simple_get(U)
+    soup = BeautifulSoup(raw_html, 'html.parser')
+
+##sbs = Scoreboard Stats
+sbs = {}
+
+##bss = Box Score Stats
+bss = {}
+
+slots = {0: 'QB', 2: 'RB', 4: 'WR', 6: 'TE', 
+         16: 'D/ST', 17: 'K', 20: 'BE', 23: 'FLEX'}
+
+#bss[1][0]['boxscore']
+
+print('Week', end=' ')
+for week in range(1,17):
+    print(week, end=' .. ')
+    
+    sb = requests.get('http://games.espn.com/ffl/api/v2/scoreboard', 
+                     params={'leagueId': leagueId, 'seasonId': seasonId, 'matchupPeriodId': week})
+    sb = sb.json()
+    sbs[week] = sb
+    bss[week] = {}
+    
+    # loop through matchups that week
+    for match in range(len(sb['scoreboard']['matchups'])):
+        homeId = sb['scoreboard']['matchups'][match]['teams'][0]['team']['teamId']
+        
+        r = requests.get('http://games.espn.com/ffl/api/v2/boxscore', 
+                         params={'leagueId': leagueId, 'seasonId': seasonId, 
+                                 'teamId': homeId, 'matchupPeriodId': week},
+                         #cookies={'SWID': swid, 'espn_s2': espn}
+                        )
+        r = r.json()
+        bss[week][match] = r
+
+print('\nSaving to pickle..')
+pickle.dump(sbs, open('homie_2018_sbs.pkl', 'wb'))
+pickle.dump(bss, open('homie_2018_bss.pkl', 'wb'))
+print('Complete.')
