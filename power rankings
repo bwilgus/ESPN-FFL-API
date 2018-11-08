@@ -1,0 +1,55 @@
+import espnff, pandas as pd, matplotlib.pyplot as plt, seaborn as sb, numpy as np
+from pprint import pprint as pp
+from espnff import League
+
+league_id = 2255318
+year = 2018
+espn_s2 = 'AEAPmSTFJZWO%2B%2Bu7wUaPLlynT6akRwTS%2B9ghn68UG%2F%2Bp6k58djDtfgGLHtpZOe%2FFP%2Bx4VOgIpyd%2BtBn%2FnbPgPm1pzy192bB3EzLwCMx40i%2Fc%2Bs0hEZWEgXC543u20FTJvnhVYG3gF7RKwk81twCMubHA5PrWnrPtCsBfR7RFvnDpB4aOwgZXkI%2B132YL5PGdaP7jQZCkHVcW6YgiCsHU0D0hznkbIVxsZwd2dNkam7h2WwhoZpXRI9i%2FlP5gck71wAUT%2BTiZewEpwpiXuumTOjN1'
+swid = '{E9847B8A-5D66-44EE-BC5F-D7E4A554CDC7}'
+league = League(league_id, year, espn_s2, swid)
+
+def find_index(df, column, find_term):
+    df = df[column][df.index[df[column] == find_term]]
+    return(df.index[0])
+
+latestWeek = 9
+wks = []
+teamList = []
+
+for i in range(0,latestWeek):
+    w = i + 1
+    wk = league.power_rankings(week=w)
+    wk = pd.DataFrame(wk,columns=['Score','Team'])
+    wks.append(wk)
+
+
+teamList = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10','11','12','13','14','15','16']
+
+teamList = teamList[0:latestWeek]
+
+
+
+
+for i in range(len(wks)):
+    t = []
+    s = []
+    for x in range(len(wks[i])):
+        t.append(str(wks[i]['Team'][x]))
+        s.append(float(wks[i]['Score'][x]))
+        ts = pd.DataFrame(
+            {'Team':t,
+             'Score':s
+             })
+
+t = sorted(t)
+
+heads = ['Week']
+heads.extend(t)
+
+#Create a list that contains lists of scores for each team. Using that, you can morph the list of lists into a dataframe. 
+
+wkRanks = pd.DataFrame(columns=heads)
+
+##    wkRanks[str(i + 1)] = wkRanks['Team'].apply(lambda r: float(wks[i]['Score'][find_index(ts,'Team',r)]))
+
+        
