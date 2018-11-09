@@ -1,0 +1,100 @@
+import pickle
+
+file = open(r'C:\users\wilgj\desktop\python crap\homie_2018_sbs.pkl', 'rb')
+sbs = pickle.load(file)
+
+file = open(r'C:\users\wilgj\desktop\python crap\homie_2018_bss.pkl', 'rb')
+bss = pickle.load(file)
+
+##Key
+##bss[week][matchup#]['metadata']
+  ##serverDate
+  ##defaults
+  ##seasonId
+  ##dateModifiedLeague
+  ##status
+
+##bss[week][matchup#]['boxscore']
+  ##bss[wk][matchup#]['boxscore']['scheduleItems'][0]['matchups'][0].items()
+    ##matchupTypeId
+    ##Maybe one number means regular season and one means postseason?
+
+    ##awayTeam
+      ##Dictionary
+      ##division
+      ##teamAbbrev
+      ##waiverRank
+      ##teamId
+      ##teamLocation
+      ##teamNickname
+  
+    ##homeTeam
+      ##Dictionary
+      ##division
+      ##teamAbbrev
+      ##waiverRank
+      ##teamId
+      ##teamLocation
+      ##teamNickname
+      
+    ##awayTeamScores
+bss[1][0]['boxscore']['scheduleItems'][0]['matchups'][0]['awayTeamScores'][0]
+    #Gives the total score
+
+    ##homeTeamId
+    ##awayTeamId
+
+    ##homeTeamScores
+bss[1][0]['boxscore']['scheduleItems'][0]['matchups'][0]['homeTeamScores'][0]
+    #Gives the total score
+
+    ##outcome
+bss[1][0]['boxscore']['scheduleItems'][0]['matchups'][0]['outcome']
+    #Gives the winning teamid?
+
+  ##teams
+    ##0 and 1
+      ##appliedActiveRealTotal
+        ##actual total active
+      
+      ##appliedInactiveRealTotal
+        ##actual total inactive
+        
+      ##slots
+        ##list, len = # of players
+bss[wk][m#]['boxscore']['teams'][t#]['slots'][p#]        
+          ##currentPeriodRealStats
+            ##appliedStatTotal
+              ##Total Player Score
+              
+            ##appliedStats
+              
+            ##rawStats
+            
+          ##lockStatus
+          ##currentPeriodProjectedStats
+          ##proGameIds
+          ##opponentProTeamId
+          ##isQueuedWaiverLocked
+          ##isTradeLocked
+          ##watchList
+          ##pvoRank
+          ##slotCategoryId
+          ##player
+      ##teamId
+      
+      ##appliedActiveProjectedTotal
+        ##projected active total
+      
+      ##team
+        ##Team info
+        ##Division, team abbrev, team name, division standing, overall standing, etc.
+        
+      ##appliedInactiveProjectedTotal
+        ##projected inactive total
+    
+  ##matchupPeriodId
+  ##scoringPeriodId
+  ##allScoringPeriodsInMatchupPeriod
+  ##progames
+  ##homeTeamBonus
